@@ -15,6 +15,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.codeshinobi.weather_app.ui.theme.Weather_appTheme
+import java.text.SimpleDateFormat
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,9 +41,8 @@ fun HomeScreenMain() {
         modifier = with (Modifier){
             fillMaxSize()
                 .paint(
-                    // Replace with your image id
                     painterResource(id = R.drawable.blantyre_large),
-                    contentScale = ContentScale.FillBounds)
+                    contentScale = ContentScale.FillHeight)
 
         })
     {
@@ -52,9 +52,23 @@ fun HomeScreenMain() {
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
+    val sdf = SimpleDateFormat("HH")
+    val currentTime = sdf.format(System.currentTimeMillis())
+    var greetingText = ""
+    if (currentTime.toInt() < 12) {
+        greetingText = "Good Morning"
+    }
+    else if (currentTime.toInt() < 18) {
+        greetingText = "Good Afternoon"
+    }
+    else {
+        greetingText = "Good Evening"
+    }
     Text(
-        text = "Hello $name!",
-        modifier = modifier
+        text = "$greetingText $name!",
+        modifier = modifier,
+        style = MaterialTheme.typography.titleMedium,
+        fontFamily = MaterialTheme.typography.titleMedium.fontFamily
     )
 }
 
