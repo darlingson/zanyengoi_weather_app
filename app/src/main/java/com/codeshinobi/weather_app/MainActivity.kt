@@ -107,12 +107,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             val viewModel: ForecastViewModel = viewModel()
             Weather_appTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-//                    Greeting("Android")
                     HomeScreenMain(viewModel)
                 }
             }
@@ -143,11 +141,7 @@ fun HomeScreenMain(ForecastViewModel: ForecastViewModel) {
                 Spacer(Modifier.weight(1f))
                 TimeIndicatorIcon()
             }
-
-            // Spacer to push the ForecastScreen to the bottom
             Spacer(modifier = Modifier.weight(1f))
-
-            // ForecastScreen at the bottom
             ForecastScreen(ForecastViewModel)
         }
     }
@@ -251,7 +245,6 @@ fun ForecastScreen(viewModel: ForecastViewModel) {
 
     when {
         forecasts == null -> {
-            // Loading state
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -261,7 +254,6 @@ fun ForecastScreen(viewModel: ForecastViewModel) {
             }
         }
         forecasts!!.isNotEmpty() -> {
-            // Data available
             LazyRow {
                 items(forecasts!!.size) { index ->
                     ForecastCard(forecast = forecasts!![index])
@@ -269,7 +261,6 @@ fun ForecastScreen(viewModel: ForecastViewModel) {
             }
         }
         else -> {
-            // Error state
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -283,12 +274,21 @@ fun ForecastScreen(viewModel: ForecastViewModel) {
 
 @Composable
 fun ForecastCard(forecast: HourlyForecast) {
-    Card {
+    val forecastList= forecast.time.split("T")
+    Card(
+        border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.Transparent
+        ),
+        modifier = Modifier.padding(10.dp)
+    ) {
         Column(
             modifier = Modifier
                 .padding(16.dp)
         ) {
-            Text(text = forecast.time)
+//            Text(text = forecast.time)
+            Text(text = forecastList[0])
+            Text(text = forecastList[1])
             Text(text = "${forecast.temperature} °C")
         }
     }
