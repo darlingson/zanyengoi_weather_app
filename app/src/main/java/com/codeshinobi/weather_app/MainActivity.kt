@@ -32,6 +32,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
@@ -103,7 +106,11 @@ class MainActivity : ComponentActivity() {
         ) {
             ActivityCompat.requestPermissions(this, permissions, requestCode)
         }
-        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper())
+        fusedLocationProviderClient.requestLocationUpdates(
+            locationRequest,
+            locationCallback,
+            Looper.myLooper()
+        )
         setContent {
             val viewModel: ForecastViewModel = viewModel()
             Weather_appTheme {
@@ -120,12 +127,17 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun HomeScreenMain(ForecastViewModel: ForecastViewModel) {
+    LaunchedEffect(Unit) {
+        ForecastViewModel.getForecasts()
+    }
+    var forecasts by remember { mutableStateOf<List<HourlyForecast>?>(null) }
     Box(
-        modifier = with (Modifier){
+        modifier = with(Modifier) {
             fillMaxSize()
                 .paint(
                     painterResource(id = R.drawable.blantyre_large),
-                    contentScale = ContentScale.FillHeight)
+                    contentScale = ContentScale.FillHeight
+                )
 
         })
     {
@@ -137,7 +149,7 @@ fun HomeScreenMain(ForecastViewModel: ForecastViewModel) {
         ) {
             Greeting(name = "Darlingson")
             Row(Modifier.fillMaxWidth()) {
-                CurrentTempCard()
+                CurrentTempCard(ForecastViewModel)
                 Spacer(Modifier.weight(1f))
                 TimeIndicatorIcon()
             }
@@ -146,6 +158,7 @@ fun HomeScreenMain(ForecastViewModel: ForecastViewModel) {
         }
     }
 }
+
 @Composable
 fun TimeIndicatorIcon() {
     val sdf = SimpleDateFormat("HH")
@@ -153,23 +166,55 @@ fun TimeIndicatorIcon() {
     var greetingText = painterResource(id = R.drawable.morning)
     if (currentTime.toInt() < 12) {
         greetingText = painterResource(id = R.drawable.morning)
-    }
-    else if (currentTime.toInt() < 16) {
+    } else if (currentTime.toInt() < 16) {
         greetingText = painterResource(id = R.drawable.sun_one)
-    }
-    else if (currentTime.toInt() < 28) {
+    } else if (currentTime.toInt() < 28) {
         greetingText = painterResource(id = R.drawable.sunset)
-    }
-    else {
+    } else {
         greetingText = painterResource(id = R.drawable.moon_4214952)
     }
     Card {
         Image(painter = greetingText, contentDescription = "Current time Icon")
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CurrentTempCard(){
+fun CurrentTempCard(ForecastViewModel: ForecastViewModel) {
+    val forecasts by ForecastViewModel.forecasts
+    var currentTemp by remember { mutableStateOf("22") }
+    val sdf_hour = SimpleDateFormat("HH")
+    val currentTime = sdf_hour.format(System.currentTimeMillis())
+
+    when {
+        forecasts == null -> {
+        }
+
+        forecasts!!.isNotEmpty() -> {
+            for (forecast in forecasts!!) {
+                var forecastTimeDateList = forecast.time.split("T")
+                var forecastHourMinList = forecastTimeDateList[1].split(":")
+//                if (forecastHourMinList[0] == currentTime) {
+//                    currentTemp = forecast.temperature.toString()
+//                    Log.d("TAG", "CurrentTemp: $currentTemp, CurrentTime: $currentTime")
+//                }
+                Log.d("TAG", forecastHourMinList[0])
+                Log.d("TAG", currentTime)
+                if ( forecastHourMinList[0] == currentTime) {
+                    Log.d("TAG", "They are the same")
+                    currentTemp = forecast.temperature.toString()
+                    Log.d("TAG", "CurrentTemp: $currentTemp, CurrentTime: $currentTime")
+                    break
+                }
+            }
+        }
+
+        else -> {
+
+        }
+    }
+
+
     val sdf = SimpleDateFormat("dd-MM-yyyy")
     val currentDateAndTime = sdf.format(Date())
     val day = Date()
@@ -186,26 +231,28 @@ fun CurrentTempCard(){
             containerColor = Color.Transparent
         ),
         modifier = Modifier.padding(10.dp)
-        ) {
+    ) {
         Column(
             Modifier.padding(10.dp)
         ) {
             showImage()
-            CurrentTemp(name = "Darlingson")
+            CurrentTemp(temp = currentTemp)
             Text(text = currentDateAndTime, fontSize = fontSizeMedium)
             Text(text = dayOfTheWeek, fontSize = fontSizeMedium)
         }
     }
 }
+
 @Composable
-fun CurrentTemp(name: String) {
+fun CurrentTemp(temp: String) {
 
     Box() {
-        Text(text = "22 °C", style = MaterialTheme.typography.titleLarge)
+        Text(text = temp, style = MaterialTheme.typography.titleLarge)
     }
 }
+
 @Composable
-fun showImage(){
+fun showImage() {
     Image(
         painter = painterResource(id = R.drawable.sun),
         contentDescription = "Icon for the temperature",
@@ -214,6 +261,7 @@ fun showImage(){
             .height(100.dp)
     )
 }
+
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
     val sdf = SimpleDateFormat("HH")
@@ -221,11 +269,9 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     var greetingText = ""
     if (currentTime.toInt() < 12) {
         greetingText = "Good Morning"
-    }
-    else if (currentTime.toInt() < 18) {
+    } else if (currentTime.toInt() < 18) {
         greetingText = "Good Afternoon"
-    }
-    else {
+    } else {
         greetingText = "Good Evening"
     }
     Text(
@@ -235,13 +281,10 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
         fontFamily = MaterialTheme.typography.titleMedium.fontFamily
     )
 }
+
 @Composable
 fun ForecastScreen(viewModel: ForecastViewModel) {
     val forecasts by viewModel.forecasts
-
-    LaunchedEffect(Unit) {
-        viewModel.getForecasts()
-    }
 
     when {
         forecasts == null -> {
@@ -253,6 +296,7 @@ fun ForecastScreen(viewModel: ForecastViewModel) {
                 CircularProgressIndicator()
             }
         }
+
         forecasts!!.isNotEmpty() -> {
             LazyRow {
                 items(forecasts!!.size) { index ->
@@ -260,6 +304,7 @@ fun ForecastScreen(viewModel: ForecastViewModel) {
                 }
             }
         }
+
         else -> {
             Box(
                 modifier = Modifier
@@ -274,7 +319,7 @@ fun ForecastScreen(viewModel: ForecastViewModel) {
 
 @Composable
 fun ForecastCard(forecast: HourlyForecast) {
-    val forecastList= forecast.time.split("T")
+    val forecastList = forecast.time.split("T")
     Card(
         border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
         colors = CardDefaults.cardColors(
@@ -286,11 +331,48 @@ fun ForecastCard(forecast: HourlyForecast) {
             modifier = Modifier
                 .padding(16.dp)
         ) {
-//            Text(text = forecast.time)
             Text(text = forecastList[0])
             Text(text = forecastList[1])
+            TempIcon(forecast.temperature)
             Text(text = "${forecast.temperature} °C")
         }
+    }
+}
+
+@Composable
+fun TempIcon(temperature: Double) {
+    if (temperature > 0 && temperature < 10) {
+        Image(
+            painter = painterResource(id = R.drawable.temperature_cold),
+            contentDescription = "Icon for the temperature cold",
+            modifier = Modifier
+                .padding(10.dp)
+                .height(20.dp)
+        )
+    } else if (temperature > 10 && temperature < 20) {
+        Image(
+            painter = painterResource(id = R.drawable.temperature_warm),
+            contentDescription = "Icon for the temperature moderate",
+            modifier = Modifier
+                .padding(10.dp)
+                .height(20.dp)
+        )
+    } else if (temperature > 20 && temperature < 30) {
+        Image(
+            painter = painterResource(id = R.drawable.temperature_hot),
+            contentDescription = "Icon for the temperature warm",
+            modifier = Modifier
+                .padding(10.dp)
+                .height(40.dp)
+        )
+    } else if (temperature > 30) {
+        Image(
+            painter = painterResource(id = R.drawable.sun),
+            contentDescription = "Icon for the temperature hot",
+            modifier = Modifier
+                .padding(10.dp)
+                .height(40.dp)
+        )
     }
 }
 
