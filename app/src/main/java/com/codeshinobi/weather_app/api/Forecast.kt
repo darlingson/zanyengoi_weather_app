@@ -21,3 +21,8 @@ data class HourlyUnits (
     val time: String,
     val temperature2M: String
 )
+
+data class HourlyForecast(
+    val time: String,
+    val temperature: Double
+)
