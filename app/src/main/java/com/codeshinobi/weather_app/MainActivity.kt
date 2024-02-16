@@ -228,7 +228,7 @@ fun CurrentTempCard(ForecastViewModel: ForecastViewModel) {
         onClick = { /*TODO*/ },
         border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
         colors = CardDefaults.cardColors(
-            containerColor = Color.Transparent
+            containerColor = Color.Gray.copy(alpha = 0.2f)
         ),
         modifier = Modifier.padding(10.dp)
     ) {
