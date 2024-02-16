@@ -11,6 +11,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -130,16 +131,25 @@ fun HomeScreenMain(ForecastViewModel: ForecastViewModel) {
 
         })
     {
-        Column {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Top
+        ) {
             Greeting(name = "Darlingson")
             Row(Modifier.fillMaxWidth()) {
                 CurrentTempCard()
                 Spacer(Modifier.weight(1f))
                 TimeIndicatorIcon()
             }
+
+            // Spacer to push the ForecastScreen to the bottom
+            Spacer(modifier = Modifier.weight(1f))
+
+            // ForecastScreen at the bottom
             ForecastScreen(ForecastViewModel)
         }
-
     }
 }
 @Composable
@@ -183,7 +193,9 @@ fun CurrentTempCard(){
         ),
         modifier = Modifier.padding(10.dp)
         ) {
-        Column(Modifier.padding(10.dp)) {
+        Column(
+            Modifier.padding(10.dp)
+        ) {
             showImage()
             CurrentTemp(name = "Darlingson")
             Text(text = currentDateAndTime, fontSize = fontSizeMedium)
