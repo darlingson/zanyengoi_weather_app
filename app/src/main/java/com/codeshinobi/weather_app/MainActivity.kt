@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
@@ -36,7 +37,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.codeshinobi.weather_app.ui.theme.Weather_appTheme
+import com.codeshinobi.weather_app.viewmodels.ForecastViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -97,6 +100,7 @@ class MainActivity : ComponentActivity() {
         }
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper())
         setContent {
+            val viewModel: ForecastViewModel = viewModel()
             Weather_appTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
@@ -220,6 +224,19 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
         fontFamily = MaterialTheme.typography.titleMedium.fontFamily
     )
 }
+@Composable
+fun ForecastScreen(viewModel: ForecastViewModel = viewModel()) {
+    val forecast by viewModel.forecast.observeAsState()
+
+    // Call the API when the screen is launched
+    LaunchedEffect(Unit) {
+        viewModel.getForecast()
+    }
+
+    // Now you can use 'forecast' in your composable
+    // ...
+}
+
 
 @Preview(showBackground = true)
 @Composable
