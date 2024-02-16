@@ -28,6 +28,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
@@ -38,6 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.codeshinobi.weather_app.api.Forecast
 import com.codeshinobi.weather_app.ui.theme.Weather_appTheme
 import com.codeshinobi.weather_app.viewmodels.ForecastViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -230,13 +233,9 @@ fun ForecastScreen(viewModel: ForecastViewModel) {
     LaunchedEffect(Unit) {
         viewModel.getForecast()
     }
-
-    // Now you can use 'forecast' in your composable
     Column {
         forecast?.let {
-            it.forEach { forecastItem ->
-                ForecastCard(forecastItem)
-            }
+            ForecastCard(forecast = it)
         }
     }
 }
@@ -244,7 +243,7 @@ fun ForecastScreen(viewModel: ForecastViewModel) {
 @Composable
 fun ForecastCard(forecast: Forecast) {
     Card {
-        Text(text = forecast.toString())  // Replace this with the actual data you want to display
+        Text(text = forecast.toString())
     }
 }
 
