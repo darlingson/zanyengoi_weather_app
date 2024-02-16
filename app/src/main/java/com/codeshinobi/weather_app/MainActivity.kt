@@ -225,16 +225,27 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     )
 }
 @Composable
-fun ForecastScreen(viewModel: ForecastViewModel = viewModel()) {
+fun ForecastScreen(viewModel: ForecastViewModel) {
     val forecast by viewModel.forecast.observeAsState()
-
-    // Call the API when the screen is launched
     LaunchedEffect(Unit) {
         viewModel.getForecast()
     }
 
     // Now you can use 'forecast' in your composable
-    // ...
+    Column {
+        forecast?.let {
+            it.forEach { forecastItem ->
+                ForecastCard(forecastItem)
+            }
+        }
+    }
+}
+
+@Composable
+fun ForecastCard(forecast: Forecast) {
+    Card {
+        Text(text = forecast.toString())  // Replace this with the actual data you want to display
+    }
 }
 
 
