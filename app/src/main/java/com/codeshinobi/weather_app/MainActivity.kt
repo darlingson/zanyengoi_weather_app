@@ -11,7 +11,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,9 +19,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -30,18 +31,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.codeshinobi.weather_app.api.Forecast
+import com.codeshinobi.weather_app.api.HourlyForecast
 import com.codeshinobi.weather_app.ui.theme.Weather_appTheme
 import com.codeshinobi.weather_app.viewmodels.ForecastViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -230,26 +230,56 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 }
 @Composable
 fun ForecastScreen(viewModel: ForecastViewModel) {
-    val forecasts by viewModel.forecast.observeAsState()
+    val forecasts by viewModel.forecasts
 
     LaunchedEffect(Unit) {
-        viewModel.getForecast()
+        viewModel.getForecasts()
     }
 
-    LazyRow {
-        items(forecasts.) { forecast ->
-            ForecastCard(forecast = forecast)
+    when {
+        forecasts == null -> {
+            // Loading state
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center)
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+        forecasts!!.isNotEmpty() -> {
+            // Data available
+            LazyRow {
+                items(forecasts!!.size) { index ->
+                    ForecastCard(forecast = forecasts!![index])
+                }
+            }
+        }
+        else -> {
+            // Error state
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center)
+            ) {
+                Text("Failed to load forecasts")
+            }
         }
     }
 }
 
 @Composable
-fun ForecastCard(forecast: Forecast) {
+fun ForecastCard(forecast: HourlyForecast) {
     Card {
-        Text(text = forecast.toString())
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+        ) {
+            Text(text = forecast.time)
+            Text(text = "${forecast.temperature} °C")
+        }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
