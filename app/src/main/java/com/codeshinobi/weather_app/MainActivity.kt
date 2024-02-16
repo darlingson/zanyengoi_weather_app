@@ -112,7 +112,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
 //                    Greeting("Android")
-                    HomeScreenMain()
+                    HomeScreenMain(viewModel)
                 }
             }
         }
@@ -120,7 +120,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun HomeScreenMain() {
+fun HomeScreenMain(ForecastViewModel: ForecastViewModel) {
     Box(
         modifier = with (Modifier){
             fillMaxSize()
@@ -137,6 +137,7 @@ fun HomeScreenMain() {
                 Spacer(Modifier.weight(1f))
                 TimeIndicatorIcon()
             }
+            ForecastScreen(ForecastViewModel)
         }
 
     }

@@ -1,5 +1,6 @@
 package com.codeshinobi.weather_app.viewmodels
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
@@ -17,22 +18,33 @@ class ForecastViewModel : ViewModel() {
 
     fun getForecasts() {
         viewModelScope.launch {
-            val response = ApiClient.apiService.getForecast(35.0, -15.75, "temperature_2m")
-            if (response.isSuccessful) {
-                val forecastModel = response.body()
-                _forecasts.value = mapHourlyToForecasts(forecastModel?.hourly)
-            } else {
-                // Handle the error here
+            try {
+                val response = ApiClient.apiService.getForecast(-15.76, 34.98, "temperature_2m")
+                if (response.isSuccessful) {
+                    val forecastModel = response.body()
+                    _forecasts.value = mapHourlyToForecasts(forecastModel?.hourly)
+
+                    // Print the successful response in the logcat
+                    Log.d("ForecastViewModel", "Successful response: $forecastModel")
+                    Log.d("request", "request: ${response.raw().headers()}")
+                    Log.d("hourly", "hourly: ${forecastModel?.hourly}")
+                } else {
+                    // Handle the error here
+                    Log.e("ForecastViewModel", "Error: ${response.code()} - ${response.message()}")
+                }
+            } catch (e: Exception) {
+                // Handle exceptions here
+                Log.e("ForecastViewModel", "Exception: ${e.message}", e)
             }
         }
     }
 
     private fun mapHourlyToForecasts(hourly: Hourly?): List<HourlyForecast> {
         val forecasts = mutableListOf<HourlyForecast>()
-        if (hourly != null) {
+        if (hourly != null && hourly.time != null && hourly.temperature_2m != null) {
             for (i in hourly.time.indices) {
-                val time = hourly.time[i]
-                val temperature = hourly.temperature2M[i]
+                val time = hourly.time.getOrNull(i) ?: continue
+                val temperature = hourly.temperature_2m.getOrNull(i) ?: continue
                 // Create a Forecast object and add it to the list
                 val forecast = HourlyForecast(time, temperature)
                 forecasts.add(forecast)
@@ -40,4 +52,5 @@ class ForecastViewModel : ViewModel() {
         }
         return forecasts
     }
+
 }

@@ -1,7 +1,7 @@
 package com.codeshinobi.weather_app.api
 
 data class Forecast (
-    val latitude: Long,
+    val latitude: Double,
     val longitude: Double,
     val generationtimeMS: Double,
     val utcOffsetSeconds: Long,
@@ -14,12 +14,12 @@ data class Forecast (
 
 data class Hourly (
     val time: List<String>,
-    val temperature2M: List<Double>
+    val temperature_2m: List<Double>
 )
 
 data class HourlyUnits (
     val time: String,
-    val temperature2M: String
+    val temperature_2m: String
 )
 
 data class HourlyForecast(
