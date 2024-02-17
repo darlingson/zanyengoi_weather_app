@@ -24,16 +24,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -47,6 +51,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -191,7 +196,7 @@ fun getDrawableResourceId(city: String): Int {
 }
 @Composable
 fun CityDropdown(onCitySelected: (String) -> Unit) {
-    Text(text = "Blantyre")
+//    Text(text = "Blantyre")
     val citiesList = listOf<String>("Blantyre", "Zomba", "Lilongwe", "Mzuzu", "Mangochi", "Mulanje")
     var selectedIndex by rememberSaveable { mutableStateOf(0) }
 
@@ -199,7 +204,7 @@ fun CityDropdown(onCitySelected: (String) -> Unit) {
 
     Column(
         modifier = Modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.Center
     ) {
         DropdownList(
@@ -211,19 +216,19 @@ fun CityDropdown(onCitySelected: (String) -> Unit) {
                 onCitySelected(citiesList[it])
             }
         )
-        Text(text = "You have chosen ${citiesList[selectedIndex]}",
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .padding(3.dp)
-                .fillMaxWidth()
-                .background(Color.LightGray),)
+//        Text(text = "You have chosen ${citiesList[selectedIndex]}",
+//            textAlign = TextAlign.Center,
+//            modifier = Modifier
+//                .padding(3.dp)
+//                .fillMaxWidth()
+//                .background(Color.LightGray),)
     }
 }
 
 @Composable
 fun DropdownList(itemList: List<String>, selectedIndex: Int, modifier: Modifier, onItemClick: (Int) -> Unit) {
 
-    var showDropdown by rememberSaveable { mutableStateOf(true) }
+    var showDropdown by rememberSaveable { mutableStateOf(false) }
     val scrollState = rememberScrollState()
 
     Column(
@@ -232,14 +237,28 @@ fun DropdownList(itemList: List<String>, selectedIndex: Int, modifier: Modifier,
         verticalArrangement = Arrangement.Center) {
 
         // button
-        Box(
-            modifier = modifier
-                .background(Color.Red)
-                .clickable { showDropdown = true },
-//            .clickable { showDropdown = !showDropdown },
-            contentAlignment = Alignment.Center
-        ) {
-            Text(text = itemList[selectedIndex], modifier = Modifier.padding(3.dp))
+        Row {
+            Text(text = "Current city: ", modifier = Modifier.padding(3.dp))
+            Box(
+                modifier = modifier
+                    .shadow(10.dp, shape = MaterialTheme.shapes.extraSmall)
+                    .background(Color.Gray)
+                    .clickable { showDropdown = true },
+                //            .clickable { showDropdown = !showDropdown },
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(text = itemList[selectedIndex], modifier = Modifier.padding(3.dp))
+                    Icon(
+                        imageVector = Icons.Default.ArrowDropDown,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
         }
 
         // dropdown list
