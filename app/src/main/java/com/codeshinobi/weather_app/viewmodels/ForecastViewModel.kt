@@ -19,14 +19,14 @@ class ForecastViewModel : ViewModel() {
     fun getForecasts() {
         viewModelScope.launch {
             try {
-                val response = ApiClient.apiService.getForecast(-15.76, 34.98, "temperature_2m")
+                val response = ApiClient.apiService.getForecast(-15.76, 34.98, "temperature_2m,relative_humidity_2m,precipitation_probability,precipitation,rain,cloud_cover,visibility,wind_speed_10m")
                 if (response.isSuccessful) {
                     val forecastModel = response.body()
                     _forecasts.value = mapHourlyToForecasts(forecastModel?.hourly)
 
                     // Print the successful response in the logcat
                     Log.d("ForecastViewModel", "Successful response: $forecastModel")
-                    Log.d("request", "request: ${response.raw().headers()}")
+                    Log.d("request", "request: ${response.raw()}")
                     Log.d("hourly", "hourly: ${forecastModel?.hourly}")
                 } else {
                     // Handle the error here

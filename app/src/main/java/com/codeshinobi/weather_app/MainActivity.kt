@@ -482,7 +482,11 @@ fun ForecastCard(forecast: HourlyForecast) {
             Text(text = forecastList[0])
             Text(text = forecastList[1])
             TempIcon(forecast.temperature)
-            Text(text = "${forecast.temperature} °C")
+            Text(text = "Temp: ${forecast.temperature} °C")
+            Text(text = "Precipitation: ${forecast.precipitation_probability}%")
+            Text(text = "Cloud Cover : ${forecast.cloud_cover}%")
+            Text(text = "Humidity ${forecast.relative_humidity_2m}%")
+            Text(text = "Rain ${forecast.rain} mm")
         }
     }
 }

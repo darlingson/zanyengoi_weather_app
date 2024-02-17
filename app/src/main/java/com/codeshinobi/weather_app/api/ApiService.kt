@@ -14,14 +14,6 @@ interface ApiService {
     suspend fun getForecast(
         @Query("latitude") latitude: Double,
         @Query("longitude") longitude: Double,
-        @Query("hourly") hourly: String,
-        @Query("temperature_2m") temperature2m: Boolean = true,
-        @Query("relative_humidity_2m") relativeHumidity2m: Boolean = true,
-        @Query("precipitation_probability") precipitationProbability: Boolean = true,
-        @Query("precipitation") precipitation: Boolean = true,
-        @Query("rain") rain: Boolean = true,
-        @Query("cloud_cover") cloudCover: Boolean = true,
-        @Query("visibility") visibility: Boolean = true,
-        @Query("wind_speed_10m") windSpeed10m: Boolean = true
+        @Query("hourly") hourly: String
     ): Response<Forecast>
 }
