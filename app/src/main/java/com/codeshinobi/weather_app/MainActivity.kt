@@ -142,12 +142,14 @@ fun HomeScreenMain(ForecastViewModel: ForecastViewModel) {
     LaunchedEffect(Unit) {
         ForecastViewModel.getForecasts()
     }
+    var selectedCity by remember { mutableStateOf("Blantyre") }
     var forecasts by remember { mutableStateOf<List<HourlyForecast>?>(null) }
     Box(
         modifier = with(Modifier) {
             fillMaxSize()
                 .paint(
-                    painterResource(id = R.drawable.blantyre_large),
+//                    painterResource(id = R.drawable.blantyre_large),
+                    painter = painterResource(id = getDrawableResourceId(selectedCity)),
                     contentScale = ContentScale.FillHeight
                 )
 
@@ -160,7 +162,11 @@ fun HomeScreenMain(ForecastViewModel: ForecastViewModel) {
             verticalArrangement = Arrangement.Top
         ) {
             Greeting(name = "Darlingson")
-            CityDropdown()
+            CityDropdown(
+                onCitySelected = { newCity ->
+                    selectedCity = newCity
+                }
+            )
             Row(Modifier.fillMaxWidth()) {
                 CurrentTempCard(ForecastViewModel)
                 Spacer(Modifier.weight(1f))
@@ -172,7 +178,19 @@ fun HomeScreenMain(ForecastViewModel: ForecastViewModel) {
     }
 }
 @Composable
-fun CityDropdown() {
+fun getDrawableResourceId(city: String): Int {
+    val cityDrawableMap = mapOf(
+        "Blantyre" to R.drawable.blantyre_large,
+        "Zomba" to R.drawable.zomba_large,
+        "Lilongwe" to R.drawable.lilongwe_large,
+        "Mzuzu" to R.drawable.mzuzu_large,
+        "Mangochi" to R.drawable.mangochi_large,
+        "Mulanje" to R.drawable.mulanje_large
+    )
+    return cityDrawableMap[city] ?: R.drawable.blantyre_large
+}
+@Composable
+fun CityDropdown(onCitySelected: (String) -> Unit) {
     Text(text = "Blantyre")
     val citiesList = listOf<String>("Blantyre", "Zomba", "Lilongwe", "Mzuzu", "Mangochi", "Mulanje")
     var selectedIndex by rememberSaveable { mutableStateOf(0) }
@@ -184,10 +202,15 @@ fun CityDropdown() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // drop down list
-        DropdownList(itemList = citiesList, selectedIndex = selectedIndex, modifier = buttonModifier, onItemClick = {selectedIndex = it})
-
-        // some other contents below the selection button and under the list
+        DropdownList(
+            itemList = citiesList,
+            selectedIndex = selectedIndex,
+            modifier = buttonModifier,
+            onItemClick = {
+                selectedIndex = it
+                onCitySelected(citiesList[it])
+            }
+        )
         Text(text = "You have chosen ${citiesList[selectedIndex]}",
             textAlign = TextAlign.Center,
             modifier = Modifier
