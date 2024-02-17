@@ -33,8 +33,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -176,7 +174,7 @@ fun HomeScreenMain(ForecastViewModel: ForecastViewModel) {
 @Composable
 fun CityDropdown() {
     Text(text = "Blantyre")
-    val itemList = listOf<String>("Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6")
+    val citiesList = listOf<String>("Blantyre", "Zomba", "Lilongwe", "Mzuzu", "Mangochi", "Mulanje")
     var selectedIndex by rememberSaveable { mutableStateOf(0) }
 
     var buttonModifier = Modifier.width(100.dp)
@@ -187,10 +185,10 @@ fun CityDropdown() {
         verticalArrangement = Arrangement.Center
     ) {
         // drop down list
-        DropdownList(itemList = itemList, selectedIndex = selectedIndex, modifier = buttonModifier, onItemClick = {selectedIndex = it})
+        DropdownList(itemList = citiesList, selectedIndex = selectedIndex, modifier = buttonModifier, onItemClick = {selectedIndex = it})
 
         // some other contents below the selection button and under the list
-        Text(text = "You have chosen ${itemList[selectedIndex]}",
+        Text(text = "You have chosen ${citiesList[selectedIndex]}",
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .padding(3.dp)
