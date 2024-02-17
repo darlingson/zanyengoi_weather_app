@@ -45,8 +45,25 @@ class ForecastViewModel : ViewModel() {
             for (i in hourly.time.indices) {
                 val time = hourly.time.getOrNull(i) ?: continue
                 val temperature = hourly.temperature_2m.getOrNull(i) ?: continue
-                // Create a Forecast object and add it to the list
-                val forecast = HourlyForecast(time, temperature)
+                val relativeHumidity = hourly.relative_humidity_2m?.getOrNull(i) ?: continue
+                val precipitationProbability = hourly.precipitation_probability?.getOrNull(i) ?: continue
+                val precipitation = hourly.precipitation?.getOrNull(i) ?: continue
+                val rain = hourly.rain?.getOrNull(i) ?: continue
+                val cloudCover = hourly.cloud_cover?.getOrNull(i) ?: continue
+                val visibility = hourly.visibility?.getOrNull(i) ?: continue
+                val windSpeed = hourly.wind_speed_10m?.getOrNull(i) ?: continue
+
+                val forecast = HourlyForecast(
+                    time = time,
+                    temperature = temperature,
+                    relative_humidity_2m = relativeHumidity.toString(),
+                    precipitation_probability = precipitationProbability.toString(),
+                    precipitation = precipitation.toString(),
+                    rain = rain.toString(),
+                    cloud_cover = cloudCover.toString(),
+                    visibility = visibility.toString(),
+                    wind_speed_10m = windSpeed.toString()
+                )
                 forecasts.add(forecast)
             }
         }
